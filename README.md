@@ -11,17 +11,6 @@ síncrona (OpenFeign) resolvida por Service Discovery (Eureka), com proteção d
 resiliência (timeout + circuit breaker + fallback) para o caso do catálogo ficar
 indisponível. Todo acesso externo passa por um API Gateway único.
 
-Documentos técnicos completos em [docs/](docs/).
-
-## Arquitetura
-Ver [docs/arquitetura.md](docs/arquitetura.md) para o diagrama completo.
-
-- **Config Server**: configuração centralizada de todos os serviços.
-- **Eureka Server (Discovery Server)**: registro e descoberta dos serviços.
-- **API Gateway**: ponto único de entrada, roteia por nome lógico via Eureka.
-- **product-service**: dono do catálogo (produtos, categorias).
-- **order-service**: dono dos pedidos; chama `product-service` via Feign.
-
 ## Microservices
 
 | Serviço | Responsabilidade | Porta | Banco |
@@ -31,8 +20,6 @@ Ver [docs/arquitetura.md](docs/arquitetura.md) para o diagrama completo.
 | `api-gateway` | Ponto único de entrada / roteamento | 8080 | — |
 | `product-service` | Catálogo de produtos e categorias | 8091 | PostgreSQL (`product_db`) |
 | `order-service` | Pedidos de compra | 8082 | PostgreSQL (`order_db`) |
-
-Detalhamento de cada serviço em [docs/microservices.md](docs/microservices.md).
 
 ## Tecnologias utilizadas
 - Java 17+ / Spring Boot
@@ -83,7 +70,6 @@ cd api-gateway && mvn spring-boot:run
 | order-service | 8082 |
 
 ## Exemplos de endpoints
-Contratos completos em [docs/contratos-api.md](docs/contratos-api.md).
 
 ```bash
 # via API Gateway
@@ -121,11 +107,6 @@ Teste rápido pelas rotas do Gateway:
 curl http://localhost:8080/api/products
 curl http://localhost:8080/api/orders/{id}
 ```
-
-## Resiliência
-Ver plano completo, incluindo como simular a falha, em
-[docs/resiliencia.md](docs/resiliencia.md). Resumo: `order-service → product-service`
-protegida por timeout + circuit breaker + fallback (Resilience4j).
 
 ## Evidências
 
