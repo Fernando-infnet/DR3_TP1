@@ -1,0 +1,26 @@
+# Notas de planejamento pessoal - não fazem parte da entrega do trabalho
+PLANEJAMENTO-PRIVADO.md
+
+# Documentação de apoio / proposta - entregues separadamente (PDF), não no repo
+docs/
+PROPOSTA.md
+
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+
+# Editor (Kate swap files)
+.*.kate-swp
+
+# Logs locais de execução
+*.log
