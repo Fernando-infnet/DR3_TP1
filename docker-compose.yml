@@ -10,6 +10,58 @@ services:
     volumes:
       - ./docker/postgres-init:/docker-entrypoint-initdb.d
       - marketflow-postgres-data:/var/lib/postgresql/data
+    networks:
+      - marketflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  product-service:
+    build:
+      context: ./product-service
+    image: marketflow/product-service:latest
+    environment:
+      SERVER_PORT: 8080
+      SPRING_CLOUD_CONFIG_ENABLED: "false"
+      EUREKA_CLIENT_ENABLED: "false"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/product_db
+      SPRING_DATASOURCE_USERNAME: product_user
+      SPRING_DATASOURCE_PASSWORD: product_pass
+    ports:
+      - "8091:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - marketflow-network
+
+  order-service:
+    build:
+      context: ./order-service
+    image: marketflow/order-service:latest
+    environment:
+      SERVER_PORT: 8080
+      SPRING_CLOUD_CONFIG_ENABLED: "false"
+      EUREKA_CLIENT_ENABLED: "false"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/order_db
+      SPRING_DATASOURCE_USERNAME: order_user
+      SPRING_DATASOURCE_PASSWORD: order_pass
+      PRODUCT_SERVICE_URL: http://product-service:8080
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+    networks:
+      - marketflow-network
 
 volumes:
   marketflow-postgres-data:
+
+networks:
+  marketflow-network:
+    name: marketflow-network

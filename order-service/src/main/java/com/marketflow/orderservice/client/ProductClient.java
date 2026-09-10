@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
- * "product-service" é resolvido pelo Eureka (mesmo valor de spring.application.name
- * do product-service) — sem host/porta fixos.
+ * Localmente, "product-service" é resolvido pelo Eureka. Em Docker/Kubernetes,
+ * PRODUCT_SERVICE_URL aponta para o nome DNS do serviço, nunca para localhost.
  */
-@FeignClient(name = "product-service", fallback = ProductClientFallback.class)
+@FeignClient(name = "product-service", url = "${product.service.url:}", fallback = ProductClientFallback.class)
 public interface ProductClient {
 
     @GetMapping("/products/{id}")
