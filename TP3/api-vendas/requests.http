@@ -1,0 +1,64 @@
+### Requisicoes de teste (VS Code REST Client / IntelliJ HTTP Client)
+@auth = http://localhost:9000
+@produtos = http://localhost:8082
+@vendas = http://localhost:8083
+
+### 1. Rota protegida sem token -> 401
+GET {{produtos}}/produtos
+
+### 2. Login invalido -> 401
+POST {{auth}}/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "senha-errada" }
+
+### 3. Login valido -> 200 (accessToken + refreshToken)
+# @name login
+POST {{auth}}/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "admin123" }
+
+### 4. Rota protegida com token -> 200
+GET {{produtos}}/produtos
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### 5. Quem sou eu (claims do token) -> 200
+GET {{produtos}}/produtos/me
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### 6. Refresh -> 200 (novo accessToken + novo refreshToken)
+# @name refresh
+POST {{auth}}/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{login.response.body.refreshToken}}" }
+
+### 7. Rota protegida com o novo token -> 200
+GET {{produtos}}/produtos/1
+Authorization: Bearer {{refresh.response.body.accessToken}}
+
+### 8. Criar produto (somente ADMIN) -> 201
+POST {{produtos}}/produtos
+Authorization: Bearer {{refresh.response.body.accessToken}}
+Content-Type: application/json
+
+{ "nome": "Pendrive 64GB", "preco": 39.90 }
+
+### 9. Registrar venda (vendas-service consulta o produtos-service via WebClient) -> 201
+POST {{vendas}}/vendas
+Authorization: Bearer {{refresh.response.body.accessToken}}
+Content-Type: application/json
+
+{ "idProduto": 1, "quantidade": 2 }
+
+### 10. Venda de produto inexistente -> 422
+POST {{vendas}}/vendas
+Authorization: Bearer {{refresh.response.body.accessToken}}
+Content-Type: application/json
+
+{ "idProduto": 999, "quantidade": 1 }
+
+### 11. Minhas vendas -> 200
+GET {{vendas}}/vendas
+Authorization: Bearer {{refresh.response.body.accessToken}}
