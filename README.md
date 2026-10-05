@@ -1,3 +1,6 @@
+> **Projeto final (AT):** os prints e o código do AT estão na pasta [AT](AT/) —
+> veja o [README do AT](AT/README.md) com cada item da rubrica e sua evidência.
+
 # MercadoVendas
 
 ## Integrantes

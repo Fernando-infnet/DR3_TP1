@@ -1,0 +1,22 @@
+name: fornecedores-service CI
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Compilar fornecedores-service com Maven
+        working-directory: ./AT/api-vendas/fornecedores-service
+        run: mvn -B package
